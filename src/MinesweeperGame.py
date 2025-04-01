@@ -94,7 +94,7 @@ def mine_number(field, row, column):
 def flag(flag_list, row, column):
     if [row, column] not in flag_list:
         # return the new list when a new position is being flagged
-        return flag_list.append(row,column)
+        return flag_list.append([row,column])
     # return the existing list when the position is already flagged
     return flag_list
 
