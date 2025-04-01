@@ -86,6 +86,27 @@ def mine_number(field, row, column):
             mine_count += 1
     return mine_count
 
+# Flag a specific position and store this into the flag_list.
+# Return the existing list when the position to be flagged is
+# already existing in the flag_list; Return the flag_list with new
+# elements added into the list when the flagging position does not exist
+# in the list.
+def flag(flag_list, row, column):
+    if [row, column] not in flag_list:
+        # return the new list when a new position is being flagged
+        return flag_list.append(row,column)
+    # return the existing list when the position is already flagged
+    return flag_list
+
+# Remove a position in the flag_list when it exists.
+# When there are no such position in the list, return the existing list.
+def unflag(flag_list, row, column):
+    if [row, column] in flag_list:
+        # return the new list with the position removed
+        return flag_list.remove([row,column])
+    # return the existing list if the position is not inside the list
+    return flag_list
+
 # Verify if the list of flagged elements matches the list of mines
 def check_flag(mine_list, flag_list):
     # first check if the flag_list have the same length as mine_list
