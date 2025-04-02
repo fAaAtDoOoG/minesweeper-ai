@@ -50,7 +50,7 @@ def place_mine(field, mine_number):
         field[row + 1][column + 1] = 1
         mine_coordinates.append([row + 1, column + 1])
 
-    return (field, mine_coordinates)
+    return mine_coordinates
 
 # Return the amount of mines surrounding a specific position in the field.
 # Assuming that the coordinate is within the correct range.
@@ -146,10 +146,9 @@ def reveal(field, row, column, mine_list):
 # Test the functions in the main function
 def main():
     field = generate_field()
-    mine_information = place_mine(field, 25)
-    field = mine_information[0]
-    mine_list = mine_information[1]
+    mine_list = place_mine(field, 25)
     print(field)
     print(mine_list)
+
 if __name__ == '__main__':
     main()
