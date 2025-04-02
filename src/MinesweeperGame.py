@@ -1,10 +1,13 @@
 # this file contains the code for a basic minesweeper game.
+from pickletools import read_int4
 
 # import necessary libs.
 import numpy as np
+import random
 
-# Generates a basic minesweeper field with size of width * height,
-# basically a width * height zero matrix.
+# Generates a basic minesweeper field with size of width * height.
+# To benefit the calculations, the program will actually return a
+# width+2 * height+2 matrix, with the outer layer of the matrix being unused.
 # The default value of both width and height is 10.
 def generate_field(height = 10, width = 10):
     '''
@@ -12,33 +15,41 @@ def generate_field(height = 10, width = 10):
     expected height type: int
     return type: numpy.ndarray
     '''
-    return np.zeros((height, width))
+    return np.zeros((height + 2, width + 2))
 
 # Add mine_number mines into the field "field" at random positions.
 def place_mine(field, mine_number):
     # generate two matrices, row and column, to help the program to choose
     # random positions.
     shape = np.shape(field)
-    row_matrix = np.arange(shape[0])
-    column_matrix = np.arange(shape[1]) + field
-    # store all the coordinates of the mines in a seperate variable
+    # since the outer layer of the matrix is unused, we need to make consider it
+
+    row_matrix = []
+    for i in range(shape[0] - 2):
+        row_matrix.append(i)
+    column_matrix = []
+    for i in range(shape[0] - 2):
+        column_matrix.append(row_matrix[:])
+    # store all the coordinates of the mines in a separate variable
     mine_coordinates = []
+
     for i in range(mine_number):
         # choose one element from row_matrix.
-        row = np.random.choice(row_matrix, 1)
+        row = np.random.choice(row_matrix, 1)[0]
         # choose one element from column_matrix[row]
-        column = np.random.choice(column_matrix[row], 1)
+        column = np.random.choice(column_matrix[row], 1)[0]
         # delete that element from the column matrix
-        column_matrix = np.delete(column_matrix,
-                                  np.where(column_matrix == column))
+        column_matrix[row].remove(column)
         # check if that row is empty. delete the respecting row in the row_matrix
         # if the row is already empty.
-        if np.size(column_matrix[row]) == 0:
-            row_matrix = np.delete(row_matrix,
-                                   np.where(row_matrix == row))
+        if len(column_matrix) == 0:
+            row_matrix.remove(row)
         # place a mine at position (row, column) in the field.
-        field[row][column] = 1
-        mine_coordinates.append([row,column])
+        # map the row and column into the correct position
+
+        field[row + 1][column + 1] = 1
+        mine_coordinates.append([row + 1, column + 1])
+
     return (field, mine_coordinates)
 
 # Return the amount of mines surrounding a specific position in the field.
@@ -107,8 +118,9 @@ def unflag(flag_list, row, column):
     # return the existing list if the position is not inside the list
     return flag_list
 
-# Verify if the list of flagged elements matches the list of mines
-def check_flag(mine_list, flag_list):
+# Verify if the list of flagged elements matches the list of mines.
+# In other words, check if the game is done.
+def check_game(mine_list, flag_list):
     # first check if the flag_list have the same length as mine_list
     if len(mine_list) == len(flag_list):
         # check all the elements one by one
@@ -130,3 +142,14 @@ def reveal(field, row, column, mine_list):
         return False
     # now return the mine number of the revealing position
     return mine_number(field, row, column)
+
+# Test the functions in the main function
+def main():
+    field = generate_field()
+    mine_information = place_mine(field, 25)
+    field = mine_information[0]
+    mine_list = mine_information[1]
+    print(field)
+    print(mine_list)
+if __name__ == '__main__':
+    main()
